@@ -4,31 +4,9 @@ const db = require('../db');
 const utils = require('../lib/hashUtils');
 
 module.exports.createSession = (req, res, next) => {
-  // console.log('req.body: ', req.body);
-  // let querySelectSalt = 'SELECT salt FROM users WHERE username = ?';
-  // db.query(querySelectSalt, req.body.username, (err, results) => {
-  //   if (err) {
-  //     throw (err);
-  //   } else {
-  //     if (Object.keys(req.cookie).length === 0) {
-  //       req.session = {};
-  //     } else {
-  //       let hash = utils.createHash(req.body.username, results[0].salt);
-  //       req.session = {}; 
-  //       req.session.hash = hash;
-  //       console.log('REQ SESSION INSIDE CREATE SESSAION: ', req.session);
-  //       // next();
-        
-  //     }   
-  //   }    
-  // });
-  console.log('COOKIE!: ', req.cookies);
-  if (Object.keys(req.cookies).length === 0) {
-    let hash = utils.createSalt();
-    req.session = {}; 
-    req.session.hash = hash;   
-  }
-  
+  let hash = utils.createSalt();
+  req.session = {hash: hash}; 
+  res.cookies.shortlyid = {value: req.session.hash};
   next();
 };
 
