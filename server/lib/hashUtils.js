@@ -17,3 +17,4 @@ exports.compareHash = (attempted, stored, salt) => {
 exports.createSalt = () => {
   return crypto.randomBytes(32).toString('hex');
 };
+

@@ -4,7 +4,10 @@ const utils = require('./lib/hashUtils');
 const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
+const CookieParser = require('./middleware/cookieParser');
 const models = require('./models');
+const db = require('./db');
+
 
 const app = express();
 
@@ -14,10 +17,10 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+app.use(CookieParser);
+// console.log(CookieParser.parseCookies);
 
-
-
-app.get('/', 
+app.get('/', Auth.authLoginRedirect,
 (req, res) => {
   res.render('index');
 });
@@ -26,6 +29,7 @@ app.get('/create',
 (req, res) => {
   res.render('index');
 });
+
 
 app.get('/links', 
 (req, res, next) => {
@@ -77,9 +81,23 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.get('/signup', (req, res) => {
+  res.render('signup');
+});
 
+app.post('/signup', Auth.catchDuplicate, Auth.createUser, (req, res) => {  
+  res.redirect('/');
+});
 
+app.get('/login', (req, res) => {
+  console.log('LOGIN GET REQUEST');
+  res.render('login');
+});
 
+app.post('/login', Auth.verifyInfo, Auth.createSession, (req, res) => {
+  res.redirect('/');
+});
+// Auth.createCookie, 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
