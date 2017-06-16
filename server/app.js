@@ -18,20 +18,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(CookieParser);
-// console.log(CookieParser.parseCookies);
+app.use(Auth.createSession);
 
-app.get('/', Auth.authLoginRedirect,
+app.get('/', //Auth.verifySession,  
 (req, res) => {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create', Auth.verifySession, 
 (req, res) => {
   res.render('index');
 });
 
 
-app.get('/links', 
+app.get('/links', Auth.verifySession,
 (req, res, next) => {
   models.Links.getAll()
     .then(links => {
@@ -94,8 +94,37 @@ app.get('/login', (req, res) => {
   res.render('login');
 });
 
-app.post('/login', Auth.verifyInfo, Auth.createSession, (req, res) => {
-  res.redirect('/');
+// app.post('/login', Auth.verifyInfo, Auth.verifySession, (req, res) => {
+//   res.redirect('/index');
+// });
+
+app.post('/login', (req, res, next) => {
+  var username = req.body.username;
+  var password = req.body.password;
+
+  return models.Users.get({ username })
+    .then(user => {
+
+      if (!user || !models.Users.compare(password, user.password, user.salt)) {
+        // user doesn't exist or the password doesn't match
+        throw new Error('Username and password do not match');
+      }
+
+      return Auth.updateSession(req, res, user.id);
+    })
+    .then(() => {
+      res.redirect('/');
+    })
+    .error(error => {
+      res.status(500).send(error);
+    })
+    .catch(() => {
+      res.redirect('/login');
+    });
+});
+
+app.get('/logout', Auth.logout, (req, res) => {
+  res.redirect('/login');
 });
 // Auth.createCookie, 
 /************************************************************/
