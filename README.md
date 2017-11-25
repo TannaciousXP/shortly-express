@@ -4,9 +4,9 @@ Shortly is a URL shortener service similar to Bitly - but is only partially fini
 
 Think about how to approach authentication from both a user perspective and a technical perspective. Some questions to think about:
 
-- [] What additonal steps will the user need to take when interacting with the application? More specifically, what additional routes will the application need to handle?
-- [] What strategies do I need to employ to secure existing site funcitonality?
-- [] How often should the user need to enter their username + password?
+- [ ] What additonal steps will the user need to take when interacting with the application? More specifically, what additional routes will the application need to handle?
+- [ ] What strategies do I need to employ to secure existing site funcitonality?
+- [ ] How often should the user need to enter their username + password?
 
 by Peter X. Tan
 
